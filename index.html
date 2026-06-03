@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reading Helper</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <h1>Reading Helper</h1>
+      <p>Paste text, then use the arrow keys to move word by word.</p>
+    </header>
+
+    <section class="controls">
+      <label for="textInput">Text</label>
+      <textarea id="textInput" spellcheck="false">The small cat sat on the warm windowsill.
+It watched the birds and blinked in the morning sun.
+
+Then it jumped down and followed the sound of breakfast.</textarea>
+      <div class="buttonRow">
+        <button id="loadTextButton" type="button">Load text</button>
+        <button id="resetButton" type="button">Reset position</button>
+      </div>
+    </section>
+
+    <section class="focusCard" aria-live="polite">
+      <div class="focusLabel">Current word</div>
+      <div id="currentWord" class="currentWord">The</div>
+    </section>
+
+    <section>
+      <div id="readingArea" class="readingArea" tabindex="0" aria-label="Reading area"></div>
+      <p class="hint">Keyboard: ← previous word, → next word, ↑ previous sentence, ↓ next sentence</p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
