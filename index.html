@@ -9,33 +9,47 @@
 <body>
   <main class="app">
     <header class="header">
-      <h1>Reading Helper</h1>
-      <p>Paste text, then use the arrow keys to move word by word.</p>
+      <nav class="pageNav">
+        <button id="navSettings" class="navBtn" type="button" aria-label="Choose a story">
+          <!-- Book icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </button>
+        <button id="resetButton" class="navBtn" type="button" aria-label="Reset position">
+          <!-- Skip-back icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
+        </button>
+      </nav>
     </header>
 
-    <section class="controls">
-      <label for="textInput">Text</label>
-      <textarea id="textInput" spellcheck="false">The small cat sat on the warm windowsill.
-It watched the birds and blinked in the morning sun.
+    <!-- Reader page -->
+    <div id="pageReader">
+      <img id="storyImage" class="storyImage" src="" alt="" hidden />
 
-Then it jumped down and followed the sound of breakfast.</textarea>
-      <div class="buttonRow">
-        <button id="loadTextButton" type="button">Load text</button>
-        <button id="resetButton" type="button">Reset position</button>
+      <section class="focusCard" aria-live="polite">
+        <div id="currentWord" class="currentWord">—</div>
+      </section>
+
+      <section>
+        <div id="readingArea" class="readingArea" tabindex="0" aria-label="Reading area"></div>
+        <p class="hint">Keyboard: ← previous word, → next word, ↑ previous line, ↓ next line</p>
+      </section>
+    </div>
+
+    <!-- Settings modal -->
+    <div id="settingsModal" class="modalBackdrop" hidden>
+      <div class="modalPanel" role="dialog" aria-modal="true" aria-label="Choose a story">
+        <div class="modalHeader">
+          <span class="modalTitle">Stories</span>
+          <button id="closeSettings" class="modalClose" type="button" aria-label="Close">&times;</button>
+        </div>
+        <div class="modalBody">
+          <div id="storyGrid" class="storyGrid"></div>
+        </div>
       </div>
-    </section>
-
-    <section class="focusCard" aria-live="polite">
-      <div class="focusLabel">Current word</div>
-      <div id="currentWord" class="currentWord">The</div>
-    </section>
-
-    <section>
-      <div id="readingArea" class="readingArea" tabindex="0" aria-label="Reading area"></div>
-      <p class="hint">Keyboard: ← previous word, → next word, ↑ previous sentence, ↓ next sentence</p>
-    </section>
+    </div>
   </main>
 
+  <script src="stories.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

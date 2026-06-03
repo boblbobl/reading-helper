@@ -1,46 +1,100 @@
-const textInput = document.getElementById('textInput');
-const loadTextButton = document.getElementById('loadTextButton');
 const resetButton = document.getElementById('resetButton');
 const currentWord = document.getElementById('currentWord');
 const readingArea = document.getElementById('readingArea');
+const storyImage = document.getElementById('storyImage');
+const settingsModal = document.getElementById('settingsModal');
+const navSettings = document.getElementById('navSettings');
+const closeSettings = document.getElementById('closeSettings');
+const storyGrid = document.getElementById('storyGrid');
+
+const STORAGE_KEY = 'readingHelperStory';
+
+function openModal() {
+  settingsModal.hidden = false;
+  closeSettings.focus();
+}
+
+function closeModal() {
+  settingsModal.hidden = true;
+  readingArea.focus();
+}
+
+navSettings.addEventListener('click', openModal);
+closeSettings.addEventListener('click', closeModal);
+settingsModal.addEventListener('click', (e) => {
+  if (e.target === settingsModal) closeModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !settingsModal.hidden) closeModal();
+});
+
+// Story grid
+let activeStoryId = localStorage.getItem(STORAGE_KEY) || null;
+
+function renderStoryGrid() {
+  storyGrid.innerHTML = '';
+  window.STORIES.forEach((story) => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'storyCard' + (story.id === activeStoryId ? ' selected' : '');
+
+    const img = document.createElement('img');
+    img.src = story.image;
+    img.alt = story.title;
+    img.className = 'storyCardImage';
+
+    const title = document.createElement('span');
+    title.className = 'storyCardTitle';
+    title.textContent = story.title;
+
+    card.appendChild(img);
+    card.appendChild(title);
+
+    card.addEventListener('click', () => {
+      activeStoryId = story.id;
+      localStorage.setItem(STORAGE_KEY, activeStoryId);
+      loadStory(story);
+      renderStoryGrid();
+      closeModal();
+    });
+
+    storyGrid.appendChild(card);
+  });
+}
+
+function loadStory(story) {
+  structure = parseLines(story.text);
+  activeSentenceIndex = 0;
+  activeWordIndex = 0;
+  if (story.image) {
+    storyImage.src = story.image;
+    storyImage.alt = story.title;
+    storyImage.hidden = false;
+  } else {
+    storyImage.src = '';
+    storyImage.hidden = true;
+  }
+  clampIndices();
+  render();
+}
 
 let structure = [];
 let activeSentenceIndex = 0;
 let activeWordIndex = 0;
 
-function splitSentences(paragraph) {
-  const matches = paragraph.match(/[^.!?]+[.!?]*|[^.!?]+$/g);
-  return (matches || [])
-    .map((sentence) => sentence.trim())
-    .filter(Boolean);
+function splitWords(line) {
+  return line.match(/\S+/g) || [];
 }
 
-function splitWords(sentence) {
-  return sentence.match(/\S+/g) || [];
-}
-
-function parseText(rawText) {
+function parseLines(rawText) {
   return rawText
-    .split(/\n\s*\n/)
-    .map((paragraph) => paragraph.trim())
+    .split('\n')
+    .map((line) => line.trim())
     .filter(Boolean)
-    .map((paragraph) => ({
-      sentences: splitSentences(paragraph).map((sentence) => ({
-        fullText: sentence,
-        words: splitWords(sentence),
-      })),
-    }))
-    .filter((paragraph) => paragraph.sentences.length > 0);
-}
-
-function flattenSentences(parsed) {
-  return parsed.flatMap((paragraph, paragraphIndex) =>
-    paragraph.sentences.map((sentence, sentenceIndex) => ({
-      paragraphIndex,
-      sentenceIndex,
-      ...sentence,
-    }))
-  );
+    .map((line) => ({
+      fullText: line,
+      words: splitWords(line),
+    }));
 }
 
 function clampIndices() {
@@ -63,50 +117,50 @@ function render() {
     return;
   }
 
-  const paragraphs = new Map();
+  const sentence = structure[activeSentenceIndex];
 
-  structure.forEach((sentence, flatIndex) => {
-    if (!paragraphs.has(sentence.paragraphIndex)) {
-      const paragraphEl = document.createElement('p');
-      paragraphEl.className = 'paragraph';
-      paragraphs.set(sentence.paragraphIndex, paragraphEl);
-      readingArea.appendChild(paragraphEl);
+  if (activeSentenceIndex > 0) {
+    const before = document.createElement('div');
+    before.className = 'ellipsis';
+    before.textContent = '…';
+    readingArea.appendChild(before);
+  }
+
+  const sentenceEl = document.createElement('p');
+  sentenceEl.className = 'sentence';
+
+  sentence.words.forEach((word, wordIndex) => {
+    const wordEl = document.createElement('span');
+    wordEl.className = 'word';
+    wordEl.textContent = word;
+
+    if (wordIndex === activeWordIndex) {
+      wordEl.classList.add('active');
+      currentWord.textContent = word.replace(/[^\p{L}\p{M}'\u2019-]/gu, '');
     }
 
-    const sentenceEl = document.createElement('span');
-    sentenceEl.className = 'sentence';
+    sentenceEl.appendChild(wordEl);
 
-    sentence.words.forEach((word, wordIndex) => {
-      const wordEl = document.createElement('span');
-      wordEl.className = 'word';
-      wordEl.textContent = word;
-
-      if (flatIndex === activeSentenceIndex && wordIndex === activeWordIndex) {
-        wordEl.classList.add('active');
-        currentWord.textContent = word;
-        requestAnimationFrame(() => {
-          wordEl.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-        });
-      }
-
-      sentenceEl.appendChild(wordEl);
-
-      if (wordIndex < sentence.words.length - 1) {
-        sentenceEl.appendChild(document.createTextNode(' '));
-      }
-    });
-
-    paragraphs.get(sentence.paragraphIndex).appendChild(sentenceEl);
+    if (wordIndex < sentence.words.length - 1) {
+      sentenceEl.appendChild(document.createTextNode(' '));
+    }
   });
+
+  readingArea.appendChild(sentenceEl);
+
+  if (activeSentenceIndex < structure.length - 1) {
+    const after = document.createElement('div');
+    after.className = 'ellipsis';
+    after.textContent = '…';
+    readingArea.appendChild(after);
+  }
 }
 
-function loadText(resetPosition = true) {
-  structure = flattenSentences(parseText(textInput.value));
+function loadText(rawText) {
+  structure = parseLines(rawText);
 
-  if (resetPosition) {
-    activeSentenceIndex = 0;
-    activeWordIndex = 0;
-  }
+  activeSentenceIndex = 0;
+  activeWordIndex = 0;
 
   clampIndices();
   render();
@@ -165,7 +219,6 @@ window.addEventListener('keydown', (event) => {
   }
 });
 
-loadTextButton.addEventListener('click', () => loadText(true));
 resetButton.addEventListener('click', () => {
   activeSentenceIndex = 0;
   activeWordIndex = 0;
@@ -174,4 +227,11 @@ resetButton.addEventListener('click', () => {
   readingArea.focus();
 });
 
-loadText();
+// Init: render story grid and restore last selected story
+renderStoryGrid();
+const savedStory = window.STORIES.find((s) => s.id === activeStoryId);
+if (savedStory) {
+  loadStory(savedStory);
+} else if (window.STORIES.length > 0) {
+  loadStory(window.STORIES[0]);
+}

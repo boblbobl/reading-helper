@@ -34,8 +34,147 @@ body {
   color: var(--muted);
 }
 
+.pageNav {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.navBtn {
+  border: 2px solid var(--border);
+  background: #fff;
+  color: var(--muted);
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.navBtn:hover,
+.navBtn:focus-visible {
+  background: #f2f2f2;
+}
+
+.navBtn.active {
+  border-color: var(--text);
+  color: var(--text);
+}
+
+/* Modal */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modalBackdrop[hidden] {
+  display: none;
+}
+
+.modalPanel {
+  background: var(--bg);
+  border: 2px solid var(--text);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 2px solid var(--border);
+  flex-shrink: 0;
+}
+
+.modalTitle {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.modalClose {
+  border: none;
+  background: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: var(--text);
+}
+
+.modalClose:hover,
+.modalClose:focus-visible {
+  background: #f2f2f2;
+}
+
+.modalBody {
+  padding: 20px;
+  overflow-y: auto;
+}
+
 .controls {
   margin-top: 24px;
+}
+
+.storyGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.storyCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+  text-align: center;
+  transition: border-color 0.15s;
+}
+
+.storyCard:hover,
+.storyCard:focus-visible {
+  border-color: var(--text);
+}
+
+.storyCard.selected {
+  border-color: var(--text);
+  background: var(--highlight);
+}
+
+.storyCardImage {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.storyCardTitle {
+  font-weight: 700;
+  font-size: 1rem;
 }
 
 label {
@@ -81,6 +220,15 @@ button:focus-visible {
   background: #f2f2f2;
 }
 
+.storyImage {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  object-fit: contain;
+  border-radius: 16px;
+  margin-bottom: 8px;
+}
+
 .focusCard {
   margin: 28px 0;
   padding: 24px;
@@ -110,14 +258,24 @@ button:focus-visible {
   font-size: 2rem;
   line-height: 1.8;
   outline: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.paragraph {
-  margin: 0 0 20px;
+.ellipsis {
+  color: var(--muted);
+  font-size: 1.4rem;
+  letter-spacing: 0.2em;
+  line-height: 1;
+  user-select: none;
 }
 
 .sentence {
-  margin-right: 0.35em;
+  margin: 0;
+  text-align: center;
 }
 
 .word {
