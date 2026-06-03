@@ -23,16 +23,18 @@
 
     <!-- Reader page -->
     <div id="pageReader">
-      <img id="storyImage" class="storyImage" src="" alt="" hidden />
-
-      <section class="focusCard" aria-live="polite">
-        <div id="currentWord" class="currentWord">—</div>
-      </section>
-
-      <section>
-        <div id="readingArea" class="readingArea" tabindex="0" aria-label="Reading area"></div>
-        <p class="hint">Keyboard: ← previous word, → next word, ↑ previous line, ↓ next line</p>
-      </section>
+      <div class="book">
+        <div class="bookPage bookPageLeft">
+          <img id="storyImage" class="storyImage" src="" alt="" hidden />
+        </div>
+        <div class="bookPage bookPageRight">
+          <section class="focusCard" aria-live="polite">
+            <div id="currentWord" class="currentWord">—</div>
+          </section>
+          <div id="readingArea" class="readingArea" tabindex="0" aria-label="Reading area"></div>
+          <p class="hint">Keyboard: ← previous word, → next word, ↑ previous line, ↓ next line</p>
+        </div>
+      </div>
     </div>
 
     <!-- Settings modal -->
